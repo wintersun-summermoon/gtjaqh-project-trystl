@@ -1,6 +1,8 @@
 #include <vector>
 #include <string>
+#include <string.h>
 #include <map>
+#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -90,6 +92,90 @@ void nextPermutation(vector<int>& nums) {
 }
 };
 
+class State {
+    public:
+        int step;
+        int cur;
+        int res;
+        State (int step, int cur, int res) {
+            this->step = step;
+            this->cur = cur;
+            this->res = res;
+        }
+        bool operator < (const State &s) const {
+            return step > s.step;
+        }
+};
+
+class Solution4 {
+public:
+    int findRotateSteps(string ring, string key) {
+        // 思路：优先队列实现 bfs
+        int n = ring.size();
+        int m = key.size();
+        vector<vector<int>> pos(27, vector<int>());
+        vector<vector<int>> memo(n + 1, vector<int>(m + 1, INT_MAX));
+
+        for (int i = 0; i < n; i++) {
+            pos[ring[i] - 'a'].push_back(i);
+        }
+
+        if (n == 0 || m == 0)
+            return 0;
+        
+        priority_queue<State> PQ;
+
+        for (const int& idx : pos[key[0] - 'a']) {
+            PQ.push(State(min(idx, n - idx) + 1, idx, 1));
+        }
+
+        while (!PQ.empty()) {
+            State top = PQ.top(); PQ.pop();
+
+            if (top.res >= m) {
+                return top.step;
+            }
+
+            for (const int& idx : pos[key[top.res] - 'a']) {
+                int dist = abs(top.cur - idx);
+                int step = top.step + min(dist, n - dist) + 1;
+                if (step < memo[idx][top.res + 1]) {
+                    memo[idx][top.res + 1] = step;
+                    PQ.push(State(step, idx, top.res + 1));
+                }
+            }
+        }
+
+        return 0;
+    }
+};
+
+class Solution5 {
+public:
+    int findRotateSteps(string ring, string key) {
+        int n = ring.size(), m = key.size();
+        vector<int> pos[26];
+        for (int i = 0; i < n; ++i) {
+            pos[ring[i] - 'a'].push_back(i);
+        }
+        int dp[m][n];
+        memset(dp, 0x3f3f3f3f, sizeof(dp));
+        for (auto& i: pos[key[0] - 'a']) {
+            dp[0][i] = min(i, n - i) + 1;
+        }
+        for (int i = 1; i < m; ++i) {
+            for (auto& j: pos[key[i] - 'a']) {
+                for (auto& k: pos[key[i - 1] - 'a']) {
+                    dp[i][j] = min(dp[i][j], dp[i - 1][k] + min(abs(j - k), n - abs(j - k)) + 1);
+                }
+            }
+        }
+        return *min_element(dp[m - 1], dp[m - 1] + n);
+    }
+};
+
 int main() {
+    Solution6 aa;
+    aa.findRotateSteps("asdfgh", "ah");
     return 0;
 }
