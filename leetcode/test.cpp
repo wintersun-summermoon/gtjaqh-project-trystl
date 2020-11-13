@@ -174,6 +174,24 @@ public:
     }
 };
 
+class Solution6 {
+public:
+ListNode* oddEvenList(ListNode* head) {
+    if (!head || !(head->next) || !(head->next->next)) return head;
+    ListNode *oddend, *evenStart, *evenEnd;
+    oddend = head;
+    evenStart = evenEnd = head->next;
+    while (evenEnd &&evenEnd->next) {
+        oddend->next = evenEnd->next;
+        oddend = oddend->next;
+        evenEnd->next = oddend->next;;
+        evenEnd = evenEnd->next;
+    }
+    oddend->next = evenStart;
+    return head;
+}
+};
+
 int main() {
     Solution6 aa;
     aa.findRotateSteps("asdfgh", "ah");
