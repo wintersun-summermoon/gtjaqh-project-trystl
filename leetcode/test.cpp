@@ -1,11 +1,20 @@
+#include <iostream>
 #include <vector>
 #include <string>
 #include <string.h>
 #include <map>
 #include <queue>
+#include <set>
+#include <unordered_map>
 #include <algorithm>
 
 using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int value) : val(value), next(nullptr){}
+};
 
 class Solution1 {
 public:
@@ -184,7 +193,7 @@ ListNode* oddEvenList(ListNode* head) {
     while (evenEnd &&evenEnd->next) {
         oddend->next = evenEnd->next;
         oddend = oddend->next;
-        evenEnd->next = oddend->next;;
+        evenEnd->next = oddend->next;
         evenEnd = evenEnd->next;
     }
     oddend->next = evenStart;
@@ -192,8 +201,91 @@ ListNode* oddEvenList(ListNode* head) {
 }
 };
 
+class Solution7 {
+public:
+    vector<int> relativeSortArray(vector<int>& arr1, vector<int>& arr2) {
+        vector<int> res;
+        map<int, int> data;
+        for (auto arr : arr1) {
+            data[arr]++;
+        }
+        for (auto arr :arr2) {
+            if (data.count(arr) > 0) {
+                for (int i = 0; i < data[arr]; i++) {
+                    res.push_back(arr);
+                }
+                data.erase(arr);
+            }
+        }
+
+        for (auto iter = data.begin(); iter != data.end(); iter++) {
+            for (int i = 0; i < iter->second; i++) {
+                res.push_back(iter->first);
+            }
+        }
+        return res;
+
+    }
+};
+
+class Solution8 {
+public:
+    string removeKdigits(string num, int k) {
+        vector<char> stk;
+        for (auto& digit: num) {
+            while (stk.size() > 0 && stk.back() > digit && k) {
+                stk.pop_back();
+                k -= 1;
+            }
+            stk.push_back(digit);
+        }
+
+        for (; k > 0; --k) {
+            stk.pop_back();
+        }
+
+        string ans = "";
+        bool isLeadingZero = true;
+        for (auto& digit: stk) {
+            if (isLeadingZero && digit == '0') {
+                continue;
+            }
+            isLeadingZero = false;
+            ans += digit;
+        }
+        return ans == "" ? "0" : ans;
+    }
+};
+
+class Solution9 {
+public:
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        if(people.size() == 0) return {};
+        // 先把数组按照身高 从高到低排序
+        sort(people.begin(), people.end(), [](vector<int>& a, vector<int>& b)
+        {
+            return a[0] > b[0] ||(a[0] == b[0] && a[1] < b[1]);
+        });
+        vector<vector<int>> res;
+
+        // 然后重新开个数组  按顺序把 它插入到数组中的k的位置上
+        for(auto a: people)
+        {
+            res.insert(res.begin() + a[1], a);
+        }
+        return res;
+    }
+};
+
 int main() {
-    Solution6 aa;
-    aa.findRotateSteps("asdfgh", "ah");
+
+    vector<int> arr2 = {2,3,1,5,6};
+    vector<int> arr1 = {3,7,8,6,5,4,3,1,2,2,3,4,65,7,5,3,2,4,5};
+    vector<int> res;
+    Solution7 s;
+    res = s.relativeSortArray(arr1, arr2);
+    for (auto a : res) {
+        cout<<a<<endl;
+    }
     return 0;
 }
