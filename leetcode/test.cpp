@@ -223,6 +223,7 @@ public:
                 res.push_back(iter->first);
             }
         }
+        random_shuffle(res.begin(), res.end());
         return res;
 
     }
@@ -274,6 +275,32 @@ public:
             res.insert(res.begin() + a[1], a);
         }
         return res;
+    }
+};
+
+class Solution10 {
+public:
+    const int dr[4] = {1, 1, -1, -1};
+    const int dc[4] = {1, -1, -1, 1};
+
+    vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) {
+        int maxDist = max(r0, R - 1 - r0) + max(c0, C - 1 - c0);
+        vector<vector<int>> ret;
+        int row = r0, col = c0;
+        ret.push_back({row, col});
+        for (int dist = 1; dist <= maxDist; dist++) {
+            row--;
+            for (int i = 0; i < 4; i++) {
+                while ((i % 2 == 0 && row != r0) || (i % 2 != 0 && col != c0)) {
+                    if (row >= 0 && row < R && col >= 0 && col < C) {
+                        ret.push_back({row, col});
+                    }
+                    row += dr[i];
+                    col += dc[i];
+                }
+            }
+        }
+        return ret;
     }
 };
 
