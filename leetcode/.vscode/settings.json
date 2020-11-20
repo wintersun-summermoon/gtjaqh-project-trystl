@@ -12,6 +12,8 @@
         "xmemory0": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "tuple": "cpp",
+        "list": "cpp"
     }
 }

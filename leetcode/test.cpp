@@ -3,6 +3,7 @@
 #include <string>
 #include <string.h>
 #include <map>
+#include <deque>
 #include <queue>
 #include <set>
 #include <unordered_map>
@@ -331,15 +332,49 @@ public:
     }
 };
 
-int main() {
-
-    vector<int> arr2 = {2,3,1,5,6};
-    vector<int> arr1 = {3,7,8,6,5,4,3,1,2,2,3,4,65,7,5,3,2,4,5};
-    vector<int> res;
-    Solution7 s;
-    res = s.relativeSortArray(arr1, arr2);
-    for (auto a : res) {
-        cout<<a<<endl;
+class Solution12 {
+public:
+    ListNode* insertionSortList(ListNode* head) {
+        if (head == nullptr) {
+            return head;
+        }
+        ListNode* dummyHead = new ListNode(0);
+        dummyHead->next = head;
+        ListNode* lastSorted = head;
+        ListNode* curr = head->next;
+        while (curr != nullptr) {
+            if (lastSorted->val <= curr->val) {
+                lastSorted = lastSorted->next;
+            } else {
+                ListNode *prev = dummyHead;
+                while (prev->next->val <= curr->val) {
+                    prev = prev->next;
+                }
+                lastSorted->next = curr->next;
+                curr->next = prev->next;
+                prev->next = curr;
+            }
+            curr = lastSorted->next;
+        }
+        return dummyHead->next;
     }
+};
+
+class Solution14 {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int n = nums.size(), left = 0, right = 0;
+        while (right < n) {
+            if (nums[right]) {
+                swap(nums[left], nums[right]);
+                left++;
+            }
+            right++;
+        }
+    }
+};
+
+int main() {
+    
     return 0;
 }
