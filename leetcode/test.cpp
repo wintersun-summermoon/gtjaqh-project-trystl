@@ -1,3 +1,4 @@
+#include "test.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -360,6 +361,42 @@ public:
     }
 };
 
+class Solution13 {
+public:
+    int maximumGap(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 2) {
+            return 0;
+        }
+        int minVal = *min_element(nums.begin(), nums.end());
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int d = max(1, (maxVal - minVal) / (n - 1));
+        int bucketSize = (maxVal - minVal) / d + 1;
+
+        vector<pair<int, int>> bucket(bucketSize, {-1, -1});  // 存储 (桶内最小值，桶内最大值) 对，(-1, -1) 表示该桶是空的
+        for (int i = 0; i < n; i++) {
+            int idx = (nums[i] - minVal) / d;
+            if (bucket[idx].first == -1) {
+                bucket[idx].first = bucket[idx].second = nums[i];
+            } else {
+                bucket[idx].first = min(bucket[idx].first, nums[i]);
+                bucket[idx].second = max(bucket[idx].second, nums[i]);
+            }
+        }
+
+        int ret = 0;
+        int prev = -1;
+        for (int i = 0; i < bucketSize; i++) {
+            if (bucket[i].first == -1) continue;
+            if (prev != -1) {
+                ret = max(ret, bucket[i].first - bucket[prev].second);
+            }
+            prev = i;
+        }
+        return ret;
+    }
+};
+
 class Solution14 {
 public:
     void moveZeroes(vector<int>& nums) {
@@ -374,7 +411,140 @@ public:
     }
 };
 
+class Solution15 {
+public:
+    ListNode* sortList(ListNode* head) {
+        return sortList(head, nullptr);
+    }
+
+    ListNode* sortList(ListNode* head, ListNode* tail) {
+        if (head == nullptr) {
+            return head;
+        }
+        if (head->next == tail) {
+            head->next = nullptr;
+            return head;
+        }
+        ListNode* slow = head, *fast = head;
+        while (fast != tail) {
+            slow = slow->next;
+            fast = fast->next;
+            if (fast != tail) {
+                fast = fast->next;
+            }
+        }
+        ListNode* mid = slow;
+        return merge(sortList(head, mid), sortList(mid, tail));
+    }
+
+    ListNode* merge(ListNode* head1, ListNode* head2) {
+        ListNode* dummyHead = new ListNode(0);
+        ListNode* temp = dummyHead, *temp1 = head1, *temp2 = head2;
+        while (temp1 != nullptr && temp2 != nullptr) {
+            if (temp1->val <= temp2->val) {
+                temp->next = temp1;
+                temp1 = temp1->next;
+            } else {
+                temp->next = temp2;
+                temp2 = temp2->next;
+            }
+            temp = temp->next;
+        }
+        if (temp1 != nullptr) {
+            temp->next = temp1;
+        } else if (temp2 != nullptr) {
+            temp->next = temp2;
+        }
+        return dummyHead->next;
+    }
+};
+
+class Solution16 {
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        int res = 1;
+        sort(points.begin(), points.end(),[&](vector<int>&a, vector<int>&b){
+            return a[1] < b[1];
+        });
+        int right = points[0][1];
+        for (int i = 1; i < points.size(); i++) {
+            if (points[i][0] > right) {
+                right = points[i][1];
+                res++;
+            }
+        }
+        return res;
+    }
+};
+
+class Solution17 {
+public:
+    int countNodes(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int level = 0;
+        TreeNode* node = root;
+        while (node->left != nullptr) {
+            level++;
+            node = node->left;
+        }
+        int low = 1 << level, high = (1 << (level + 1)) - 1;
+        while (low < high) {
+            int mid = (high - low + 1) / 2 + low;
+            if (exists(root, level, mid)) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return low;
+    }
+
+    bool exists(TreeNode* root, int level, int k) {
+        int bits = 1 << (level - 1);
+        TreeNode* node = root;
+        while (node != nullptr && bits > 0) {
+            if (!(bits & k)) {
+                node = node->left;
+            } else {
+                node = node->right;
+            }
+            bits >>= 1;
+        }
+        return node != nullptr;
+    }
+};
+
+class Solution18 {
+public:
+    string sortString(string s) {
+        vector<int> num(26);
+        for (char &ch : s) {
+            num[ch - 'a']++;
+        }
+
+        string ret;
+        while (ret.length() < s.length()) {
+            for (int i = 0; i < 26; i++) {
+                if (num[i]) {
+                    ret.push_back(i + 'a');
+                    num[i]--;
+                }
+            }
+            for (int i = 25; i >= 0; i--) {
+                if (num[i]) {
+                    ret.push_back(i + 'a');
+                    num[i]--;
+                }
+            }
+        }
+        return ret;
+    }
+};
+
 int main() {
-    
+    string s = "asd";
+    cout<<s<<endl;
     return 0;
 }
