@@ -9,6 +9,7 @@
 #include <set>
 #include <unordered_map>
 #include <algorithm>
+#include<functional>
 
 using namespace std;
 
@@ -543,8 +544,141 @@ public:
     }
 };
 
+class Solution19 {
+public:
+int fourSumCount(vector<int>& A, vector<int>& B, vector<int>& C, vector<int>& D) {
+    int size = A.size();
+    if (size == 0) return 0;
+    unordered_map<int, int> result;
+    int res = 0;
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            result[A[i]+B[j]]++;
+        }
+    }
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++) {
+            if (result.find(0-C[i]-D[j])!= result.end()) {
+                res+= result[0-C[i]-D[j]];
+            }
+        }
+    }
+    return res;
+}
+};
+
+class Solution20 {
+public:
+    int reversePairsRecursive(vector<int>& nums, int left, int right) {
+        if (left == right) {
+            return 0;
+        } else {
+            int mid = (left + right) / 2;
+            int n1 = reversePairsRecursive(nums, left, mid);
+            int n2 = reversePairsRecursive(nums, mid + 1, right);
+            int ret = n1 + n2;
+
+            // 首先统计下标对的数量
+            int i = left;
+            int j = mid + 1;
+            while (i <= mid) {
+                while (j <= right && (long long)nums[i] > 2 * (long long)nums[j]) j++;
+                ret += (j - mid - 1);
+                i++;
+            }
+
+            // 随后合并两个排序数组
+            vector<int> sorted(right - left + 1);
+            int p1 = left, p2 = mid + 1;
+            int p = 0;
+            while (p1 <= mid || p2 <= right) {
+                if (p1 > mid) {
+                    sorted[p++] = nums[p2++];
+                } else if (p2 > right) {
+                    sorted[p++] = nums[p1++];
+                } else {
+                    if (nums[p1] < nums[p2]) {
+                        sorted[p++] = nums[p1++];
+                    } else {
+                        sorted[p++] = nums[p2++];
+                    }
+                }
+            }
+            for (int i = 0; i < sorted.size(); i++) {
+                nums[left + i] = sorted[i];
+            }
+            return ret;
+        }
+    }
+
+    int reversePairs(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        return reversePairsRecursive(nums, 0, nums.size() - 1);
+    }
+};
+
+class Solution21 {
+public:
+    int largestPerimeter(vector<int>& A) {
+        int size = A.size();
+        if (size < 3) return 0;
+        sort(A.begin(), A.end());
+        for (int i = size-1; i >=2; i--) {
+            if (A[i-1]+A[i-2] > A[i]) return A[i]+A[i-1]+A[i-2];
+        }
+        return 0;
+    }
+};
+
+class Solution22 {
+public:
+    string reorganizeString(string S) {
+        if (S.length() < 2) {
+            return S;
+        }
+        vector<int> counts(26, 0);
+        int maxCount = 0;
+        int length = S.length();
+        for (int i = 0; i < length; i++) {
+            char c = S[i];
+            counts[c - 'a']++;
+            maxCount = max(maxCount, counts[c - 'a']);
+        }
+        if (maxCount > (length + 1) / 2) {
+            return "";
+        }
+        auto cmp = [&](const char& letter1, const char& letter2) {
+            return counts[letter1 - 'a']  < counts[letter2 - 'a'];
+        };
+        priority_queue<char, vector<char>,  decltype(cmp)> queue{cmp};
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (counts[c - 'a'] > 0) {
+                queue.push(c);
+            }
+        }
+        string sb = "";
+        while (queue.size() > 1) {
+            char letter1 = queue.top(); queue.pop();
+            char letter2 = queue.top(); queue.pop();
+            sb += letter1;
+            sb += letter2;
+            int index1 = letter1 - 'a', index2 = letter2 - 'a';
+            counts[index1]--;
+            counts[index2]--;
+            if (counts[index1] > 0) {
+                queue.push(letter1);
+            }
+            if (counts[index2] > 0) {
+                queue.push(letter2);
+            }
+        }
+        if (queue.size() > 0) {
+            sb += queue.top();
+        }
+        return sb;
+    }
+};
+
 int main() {
-    string s = "asd";
-    cout<<s<<endl;
     return 0;
 }
