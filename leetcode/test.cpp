@@ -680,7 +680,7 @@ public:
 };
 
 
-class Solution {
+class Solution23 {
 public:
     vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
         int m = nums1.size(), n = nums2.size();
@@ -750,6 +750,135 @@ public:
         }
         return (x - index1) - (y - index2);
     }
+};
+
+class Solution24 {
+public:
+    bool isPossible(vector<int>& nums) {
+        vector<pair<int, int>> seqList;
+        int i = 0;
+        while(i < nums.size()){
+            int cnt = 0, n = nums[i];
+            while(i < nums.size() && nums[i] == n) cnt++, i++;
+
+            for(int j = seqList.size() - 1; j >= 0 && cnt > 0; j--){
+                if(seqList[j].first == n - 1){
+                    seqList[j].first = n;
+                    seqList[j].second++;
+                    cnt--;
+                }
+                else break;
+            }
+
+            while(cnt > 0){
+                seqList.push_back(make_pair(n, 1));
+                cnt--;
+            }
+        }
+
+        for(auto& seq: seqList) if(seq.second < 3) return false;
+
+        return true;
+    }
+};
+
+class Solution25 {
+public:
+    int countPrimes(int n) {
+        vector<int> primes;
+        vector<int> isPrime(n, 1);
+        for (int i = 2; i < n; ++i) {
+            if (isPrime[i]) {
+                primes.push_back(i);
+            }
+            for (int j = 0; j < primes.size() && i * primes[j] < n; ++j) {
+                isPrime[i * primes[j]] = 0;
+                if (i % primes[j] == 0) {
+                    break;
+                }
+            }
+        }
+        return primes.size();
+    }
+};
+
+class Solution26 {
+public:
+    int matrixScore(vector<vector<int>>& A) {
+        int m = A.size(), n = A[0].size();
+        int ret = m * (1 << (n - 1));
+
+        for (int j = 1; j < n; j++) {
+            int nOnes = 0;
+            for (int i = 0; i < m; i++) {
+                if (A[i][0] == 1) {
+                    nOnes += A[i][j];
+                } else {
+                    nOnes += (1 - A[i][j]); // 如果这一行进行了行反转，则该元素的实际取值为 1 - A[i][j]
+                }
+            }
+            int k = max(nOnes, m - nOnes);
+            ret += k * (1 << (n - j - 1));
+        }
+        return ret;
+    }
+};
+
+class Solution27 {
+public:
+    vector<int> splitIntoFibonacci(string S) {
+        vector<int> list;
+        backtrack(list, S, S.length(), 0, 0, 0);
+        return list;
+    }
+
+    bool backtrack(vector<int>& list, string S, int length, int index, long long sum, int prev) {
+        if (index == length) {
+            return list.size() >= 3;
+        }
+        long long curr = 0;
+        for (int i = index; i < length; i++) {
+            if (i > index && S[index] == '0') {
+                break;
+            }
+            curr = curr * 10 + S[i] - '0';
+            if (curr > INT_MAX) {
+                break;
+            }
+            if (list.size() >= 2) {
+                if (curr < sum) {
+                    continue;
+                }
+                else if (curr > sum) {
+                    break;
+                }
+            }
+            list.push_back(curr);
+            if (backtrack(list, S, length, i + 1, prev + curr, curr)) {
+                return true;
+            }
+            list.pop_back();
+        }
+        return false;
+    }
+};
+
+class Solution28 {
+public:
+    int uniquePaths(int m, int n) {
+    vector<vector<int>> dp(m, vector<int>(n, 0));
+    for (int i = 0; i < m ; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == 0 || j == 0) {
+                dp[i][j]=1;
+            } else {
+                dp[i][j] = dp[i][j-1]+dp[i-1][j];
+            }
+        }
+    }
+    return dp[m-1][n-1];
+
+}
 };
 
 int main() {
